@@ -5,7 +5,7 @@ description: Scaffold a new bounded context as a Django app with domain, applica
 
 # Create a new Django app with DDD layers
 
-Create a new app with the name the user gives under the apps root named in the project `CLAUDE.md` (`src/apps/` by default). Copy the style of an existing app when there is one.
+Create a new app with the name the user gives under the apps root named in the project `CLAUDE.md`. Copy the style of an existing app when there is one.
 
 ## Directory structure
 

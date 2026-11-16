@@ -15,7 +15,7 @@ Never overwrite a file without showing the user the change first. Do not install
 Find these and show them to the user in one list before writing anything:
 
 - `manage.py` and the directory that holds it.
-- The apps root (`{apps_root}`): the directory whose children are Django apps. Default `src/apps`.
+- The apps root (`{apps_root}`): the directory whose children are Django apps.
 - The base settings module (`{base_settings_path}`) and the root URLconf.
 - The commands the project uses to test, format and lint (`{test_command}`, `{format_command}`, `{lint_command}`). Look in the Makefile, justfile, `pyproject.toml`, tox or nox config, CI config and README.
 - The formatters that can format one file, and the executable that runs them.

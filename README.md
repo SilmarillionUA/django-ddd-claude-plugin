@@ -55,45 +55,43 @@ An app never imports another app outside its gateways. Queries are built on repo
 ## App layout
 
 ```
-src/
-├── manage.py
-└── apps/
-    ├── corelib/                 small helpers with no business meaning
-    │   └── external/            HTTP clients for outside APIs
-    └── <app>/
-        ├── __init__.py          points Django at infrastructure/apps.py
-        ├── CLAUDE.md            what the code cannot tell you
-        ├── domain/
-        │   ├── models.py        Django models: the entities
-        │   ├── managers.py      QuerySets and repository managers
-        │   ├── choices.py       TextChoices
-        │   ├── exceptions.py    domain errors, each with a stable `code`
-        │   ├── interfaces.py    ABCs for other apps and the outside world
-        │   ├── settings.py      business numbers, with the reason for each
-        │   ├── types.py         value objects and frozen dataclasses
-        │   ├── services/        pure business logic, one class per file
-        │   └── tests/
-        ├── application/
-        │   ├── use_cases/       one class per action, one public execute()
-        │   └── tests/
-        └── infrastructure/
-            ├── apps.py          AppConfig
-            ├── admin.py         model admins
-            ├── di.py            the container that builds use cases
-            ├── gateways.py      implementations of domain interfaces
-            ├── views.py         class-based views and fragment endpoints
-            ├── api.py           DRF views
-            ├── serializers.py   DRF serializers
-            ├── forms.py
-            ├── tasks.py         background tasks
-            ├── urls.py
-            ├── management/      management commands
-            ├── migrations/
-            ├── templates/<app>/
-            └── tests/
+<apps root>/
+├── corelib/                 small helpers with no business meaning
+│   └── external/            HTTP clients for outside APIs
+└── <app>/
+    ├── __init__.py          points Django at infrastructure/apps.py
+    ├── CLAUDE.md            what the code cannot tell you
+    ├── domain/
+    │   ├── models.py        Django models: the entities
+    │   ├── managers.py      QuerySets and repository managers
+    │   ├── choices.py       TextChoices
+    │   ├── exceptions.py    domain errors, each with a stable `code`
+    │   ├── interfaces.py    ABCs for other apps and the outside world
+    │   ├── settings.py      business numbers, with the reason for each
+    │   ├── types.py         value objects and frozen dataclasses
+    │   ├── services/        pure business logic, one class per file
+    │   └── tests/
+    ├── application/
+    │   ├── use_cases/       one class per action, one public execute()
+    │   └── tests/
+    └── infrastructure/
+        ├── apps.py          AppConfig
+        ├── admin.py         model admins
+        ├── di.py            the container that builds use cases
+        ├── gateways.py      implementations of domain interfaces
+        ├── views.py         class-based views and fragment endpoints
+        ├── api.py           DRF views
+        ├── serializers.py   DRF serializers
+        ├── forms.py
+        ├── tasks.py         background tasks
+        ├── urls.py
+        ├── management/      management commands
+        ├── migrations/
+        ├── templates/<app>/
+        └── tests/
 ```
 
-`src/apps` is the default apps root. `init` records the real one for your project. An app only has the files it needs.
+The apps root is whichever directory holds your Django apps. `init` finds it and records it. An app only has the files it needs.
 
 The full rules and the reasons for them are in [skills/architecture/SKILL.md](skills/architecture/SKILL.md).
 
