@@ -118,7 +118,7 @@ Then, inside your Django project:
 
 - `CLAUDE.md` with the rules and your project's own test, format and lint commands.
 - `.claude/django-ddd.json`, which turns the hooks on for this project.
-- Permission entries in `.claude/settings.json`.
+- Permission entries in `.claude/settings.json`, and the plugin switched on for the project if you say yes.
 
 It shows each change before writing. It installs nothing and moves no code.
 
