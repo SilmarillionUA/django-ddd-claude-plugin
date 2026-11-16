@@ -1,6 +1,6 @@
 {
   "name": "django-ddd",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "DDD and Clean Architecture workflow for Django: bounded-context apps with domain, application and infrastructure layers, an import guard, and skills for each building block.",
   "license": "MIT",
   "author": {

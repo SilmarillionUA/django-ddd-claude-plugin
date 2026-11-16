@@ -34,6 +34,7 @@ Write `.claude/django-ddd.json` from `templates/django-ddd.json` next to this fi
 
 - `apps_root`: the real apps root, relative to the project root.
 - `format_commands`: for each file suffix, the commands that format one file. Each command is a list of arguments with `{file}` for the edited file. The hook runs them from the project root with no virtualenv active, so name the executable by its path. Leave it empty when the project has no formatter.
+- Carry over the project's formatter excludes, such as migrations. An exclude in the formatter's config does not apply to a file passed by name, so add the flag that forces it (`--force-exclude` for black, `--filter-files` for isort). Without it the hook reformats files the project's own format command skips.
 
 ```json
 {
