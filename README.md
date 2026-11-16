@@ -8,9 +8,41 @@ It assumes Django and Django REST Framework. For everything else (test runner, f
 
 Each Django app is one bounded context with three layers. Imports point inward only.
 
+```mermaid
+flowchart LR
+    request(["Request, task or command"])
+    outside[("Another app or outside API")]
+
+    subgraph app["One Django app, one bounded context"]
+        subgraph infrastructure["infrastructure"]
+            view["Views, API, tasks, commands"]
+            container["DI container"]
+            gateway["Gateways"]
+        end
+
+        subgraph application["application"]
+            usecase["Use cases: execute()"]
+        end
+
+        subgraph domain["domain"]
+            repository["Models and repository managers"]
+            service["Pure services"]
+            interface["Interfaces"]
+        end
+    end
+
+    request --> view
+    view -->|asks for a use case| container
+    container -->|builds| usecase
+    container -->|builds| gateway
+    usecase --> repository
+    usecase --> service
+    usecase --> interface
+    gateway -.->|implements| interface
+    gateway --> outside
 ```
-infrastructure  ->  application  ->  domain
-```
+
+Solid arrows are calls and imports, and they only point inward: infrastructure to application to domain. A use case reaches the outside world through an interface that a gateway implements.
 
 | Layer | Holds |
 |---|---|
@@ -21,6 +53,10 @@ infrastructure  ->  application  ->  domain
 An app never imports another app outside its gateways. Queries are built on repository managers, not in views or use cases. The clock is passed into use cases as an argument. The ORM is accepted as the persistence layer, so Django models are the entities.
 
 The full rules and the reasons for them are in [skills/architecture/SKILL.md](skills/architecture/SKILL.md).
+
+## Example project
+
+[django-ddd-example](https://github.com/SilmarillionUA/django-ddd-example) is a small library app built this way, with a catalog and a lending context. Read it to see the layers, a cross-app gateway and the tests for each layer in real code.
 
 ## Install
 
