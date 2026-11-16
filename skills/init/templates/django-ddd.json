@@ -1,0 +1,4 @@
+{
+  "apps_root": "src/apps",
+  "django_target_version": "5.2"
+}

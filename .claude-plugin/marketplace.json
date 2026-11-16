@@ -1,0 +1,14 @@
+{
+  "name": "django-ddd-claude-plugin",
+  "description": "Claude Code plugin for building Django projects with DDD layers.",
+  "owner": {
+    "name": "Oleh Bakhin"
+  },
+  "plugins": [
+    {
+      "name": "django-ddd",
+      "source": "./",
+      "description": "DDD and Clean Architecture workflow for Django: layered apps, an import guard, and skills for each building block."
+    }
+  ]
+}

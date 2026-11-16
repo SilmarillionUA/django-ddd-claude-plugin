@@ -1,0 +1,9 @@
+{
+  "name": "django-ddd",
+  "version": "0.1.0",
+  "description": "DDD and Clean Architecture workflow for Django: bounded-context apps with domain, application and infrastructure layers, an import guard, and skills for each building block.",
+  "author": {
+    "name": "Oleh Bakhin"
+  },
+  "keywords": ["django", "ddd", "clean-architecture"]
+}
