@@ -61,4 +61,4 @@ Stub each interface with a small subclass. One test per rule.
 ## After creating
 
 - Wire it to a view, API view, task or command through the container.
-- `make format` and `make test`.
+- Run the project's format and test commands (see `CLAUDE.md`).

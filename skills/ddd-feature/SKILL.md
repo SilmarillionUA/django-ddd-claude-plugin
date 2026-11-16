@@ -35,7 +35,7 @@ For each outside need, use the `django-ddd:new-gateway` skill: interface in `dom
 
 Pick what the request needs, each through the container:
 
-- Page: `django-ddd:new-view` skill, and `django-ddd:htmx-endpoint` for fragments and actions.
+- Page: `django-ddd:new-view` skill, and `django-ddd:fragment-endpoint` for partial updates and inline actions.
 - API: a DRF view in `infrastructure/api.py` that returns `{"error": exc.code}` on domain errors.
 - Background or periodic: `django-ddd:new-task` skill.
 - Staff tools: `django-ddd:new-admin` skill.
@@ -46,7 +46,7 @@ Tests: `infrastructure/tests/`.
 
 1. `python manage.py makemigrations` if models changed.
 2. Update the app's `CLAUDE.md` if an invariant or a cross-app dependency changed.
-3. `make format`, `make lint`, `make test`. `make lint` includes the layer check.
+3. Run the project's format, lint and test commands (see `CLAUDE.md`), then the layer check: `python3 "${CLAUDE_PLUGIN_ROOT}/hooks/ddd_layer_guard.py" --all`.
 4. Ask the `django-ddd:ddd-reviewer` subagent to review the diff, and fix what it reports.
 
 Stop there. Do not stage or commit.

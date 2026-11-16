@@ -36,8 +36,8 @@ class FeeCalculator:
 - Configuration is a frozen dataclass whose defaults come from `domain/settings.py`.
 - Results are frozen dataclasses in `domain/types.py`.
 - Use cases receive the service through `__init__`; the container builds it.
-- Tests are plain unit tests with `@pytest.mark.unit` and a custom policy.
+- Tests are plain unit tests with a custom policy. They need no database.
 
 ## After creating
 
-- `make format`
+- Run the project's format command (see `CLAUDE.md`).

@@ -1,11 +1,6 @@
 {
   "permissions": {
     "allow": [
-      "Bash(make test:*)",
-      "Bash(make lint:*)",
-      "Bash(make format:*)",
-      "Bash(make architecture:*)",
-      "Bash(python -m pytest:*)",
       "Bash(git status:*)",
       "Bash(git diff:*)",
       "Bash(git log:*)"

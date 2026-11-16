@@ -1,1 +1,1 @@
-Run `make lint` (flake8, the DDD layer check, black --check, isort --check-only). Report each issue with file and line, and suggest a fix.
+Run the project's lint command named in `CLAUDE.md`, then the layer check from the project root: `python3 "${CLAUDE_PLUGIN_ROOT}/hooks/ddd_layer_guard.py" --all`. Report each issue with file and line, and suggest a fix.

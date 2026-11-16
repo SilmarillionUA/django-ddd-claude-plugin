@@ -25,9 +25,9 @@ Create a form with the name the user gives in the app's `infrastructure/forms.py
       return self.form_invalid(form)
   ```
 - Prefer `forms.Form` feeding a use case over a `ModelForm` that saves directly.
-- Bootstrap widget classes: `form-control`, `form-select`, `form-check-input`.
+- Widget classes follow the project's existing forms.
 - `gettext_lazy` labels. Limits from `domain/settings.py`.
 
 ## After creating
 
-- `make format`
+- Run the project's format command (see `CLAUDE.md`).

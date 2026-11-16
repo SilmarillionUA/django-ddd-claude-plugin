@@ -8,6 +8,8 @@ line is checked, so a heredoc or a commit message that mentions one of
 these words does not trip it.
 """
 
+from __future__ import annotations
+
 import json
 import re
 import sys

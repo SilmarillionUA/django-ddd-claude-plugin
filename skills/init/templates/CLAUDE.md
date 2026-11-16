@@ -18,31 +18,31 @@
 - Each app has a DI container in `infrastructure/di.py` (`<App>Container`) with `@staticmethod` factories. Views, tasks and commands get use cases from it and never build gateways themselves.
 - API output goes through DRF `serializers.Serializer` subclasses with `to_representation()`. Request-scoped state arrives via serializer `context`.
 - Shared helpers with no business meaning go in `corelib`.
-- An outside API is split in two. The client in `corelib/external/` owns HTTP (session, timeout, retries) and returns the API's shapes. The gateway in `infrastructure/gateways.py` takes the client in `__init__` and maps those shapes to domain types. Gateways never call `requests` themselves.
+- An outside API is split in two. The client in `corelib/external/` owns HTTP (session, timeout, retries) and returns the API's shapes. The gateway in `infrastructure/gateways.py` takes the client in `__init__` and maps those shapes to domain types. Gateways never make HTTP calls themselves.
 
 ## Wiring an app
 
 - `{apps_root}` is on `sys.path`, so apps import as `<app>`, not `apps.<app>`.
 - `<app>/__init__.py` aliases `sys.modules["<app>.apps"]` to `infrastructure/apps.py`.
 - The AppConfig overrides `import_models()` to load `domain/models.py` and set `models_module`, and imports `infrastructure.admin` in `ready()`.
-- Add the app to `LOCAL_APPS`, `MIGRATION_MODULES` and `TEMPLATES["DIRS"]` in `{base_settings_path}`, and to `autodiscover_tasks` in `{celery_module_path}` if it has tasks.
+- Add the app to `LOCAL_APPS`, `MIGRATION_MODULES` and `TEMPLATES["DIRS"]` in `{base_settings_path}`.
 - Management commands are registered by name in `ready()`.
 
 ## Commands
 
-- `make test` runs pytest.
-- `make format` runs isort, black and djade. `make lint` runs flake8, the DDD layer check (`make architecture`) and the black and isort checks.
+- Test: `{test_command}`
+- Format: `{format_command}`
+- Lint: `{lint_command}`
+- Layer check: `/django-ddd:check-architecture`
 
 ## Testing
 
-- pytest with `pytest-django`. Tests go in `{layer}/tests/` inside each app.
-- `make_*` factory fixtures in the app's `conftest.py`. Shared fixtures go in `{apps_root}/conftest.py`.
-- Use case tests pass stub classes that subclass the domain interface. Patch only at the infrastructure edge (HTTP calls, `.delay`).
-- Markers: `@pytest.mark.unit`, `@pytest.mark.integration`, `@pytest.mark.slow`.
+- Tests go in `<layer>/tests/` inside each app.
+- Test data comes from the project's factories or fixtures. Add one next to the others when it is missing.
+- Use case tests pass stub classes that subclass the domain interface. Patch only at the infrastructure edge (HTTP calls, task queueing).
 
 ## Instructions
 
-- Use `structlog.get_logger(__name__)` in infrastructure. Use `logging.getLogger(__name__)` in domain and application.
 - Absolute imports from the app name (`from <app>.domain.models import <Model>`), never relative.
 - Top-level imports only, except `TYPE_CHECKING` blocks and `import_module` in `AppConfig`.
 - No magic numbers or strings. Name them at module level.
@@ -50,7 +50,7 @@
 - Prefer `filter().first()` over try/except `DoesNotExist`, and `dict.get()` over square brackets unless a missing key should raise.
 - Named arguments for calls with two or more arguments that could be swapped.
 - Comments explain why, never what. Docstrings on classes and functions whose contract is not obvious.
-- No inline CSS. Bootstrap classes first. `js-` prefix for classes used by JavaScript, never targeted by CSS.
+- No inline CSS. `js-` prefix for classes used by JavaScript, never targeted by CSS.
 - User-facing text lives in templates with `{% translate %}`, or in `gettext` for messages.
 - `select_related` and `prefetch_related` wherever a list touches a relation.
 
@@ -61,7 +61,7 @@ Each app has a `CLAUDE.md` of at most 30 lines: what the context owns, invariant
 ## Claude Code setup
 
 - The `django-ddd` plugin provides the skills, subagents and hooks below. `.claude/django-ddd.json` turns its hooks on for this project.
-- Hooks run on every edit: the file is formatted, then the layer guard rejects imports that point outward. Fix the import it reports; do not work around the guard.
+- Hooks run on every edit: the file is formatted when format commands are set, then the layer guard rejects imports that point outward. Fix the import it reports; do not work around the guard.
 - Destructive shell commands are blocked. Ask the user instead of retrying.
 - For a feature that spans layers, follow the `django-ddd:ddd-feature` skill. Single pieces have their own skills (`django-ddd:new-usecase`, `django-ddd:new-gateway`, and so on).
-- Before handing work back, run `make lint` and `make test`, then ask the `django-ddd:ddd-reviewer` subagent for a review.
+- Before handing work back, run the lint and test commands above and the layer check, then ask the `django-ddd:ddd-reviewer` subagent for a review.

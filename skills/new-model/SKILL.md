@@ -56,4 +56,4 @@ Register it in `infrastructure/admin.py` (see the `django-ddd:new-admin` skill).
 ## After creating
 
 - `python manage.py makemigrations`
-- `make format`
+- Run the project's format command (see `CLAUDE.md`).

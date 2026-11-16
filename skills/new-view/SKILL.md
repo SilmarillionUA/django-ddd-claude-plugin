@@ -13,7 +13,7 @@ Create a view with the name the user gives in the app's `infrastructure/views.py
 - Views read the request, call a use case from the container, and render. No queries and no business rules in the view.
 - Pass the clock in: `today=timezone.localdate()`.
 - Query parameter names are module constants, passed to the template through the context.
-- A page and its HTMX fragment share one mixin that builds the context, so both read the request the same way.
+- A page and its fragment share one mixin that builds the context, so both read the request the same way.
 - Map domain errors to messages in one dict keyed by error class. Catch only those classes.
 - Templates live in `infrastructure/templates/{app}/`, fragments in `partials/` with a leading underscore.
 
@@ -44,4 +44,4 @@ path("table/", MyLoansTableView.as_view(), name="my_loans_table"),
 ## After creating
 
 - Add tests in `infrastructure/tests/test_views.py`.
-- `make format`
+- Run the project's format command (see `CLAUDE.md`).

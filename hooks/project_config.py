@@ -5,6 +5,8 @@ The init skill writes the config file. A project without it has not
 opted in, so every hook does nothing there.
 """
 
+from __future__ import annotations
+
 import json
 import os
 from pathlib import Path

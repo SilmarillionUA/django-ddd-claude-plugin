@@ -1,3 +1,3 @@
 # Format all code
 
-Run `make format` (isort, black, djade) and report anything a formatter could not fix.
+Run the project's format command named in `CLAUDE.md` and report anything it could not fix. If `CLAUDE.md` names none, say so and stop.

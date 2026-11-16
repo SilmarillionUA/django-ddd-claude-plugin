@@ -12,11 +12,13 @@ As a Claude Code PostToolUse hook it reads the tool call from stdin and
 checks the edited file. Exit code 2 sends the report back to Claude,
 which then fixes the import. The hook does nothing in a project without
 .claude/django-ddd.json. With --all it checks every file, for
-`make lint` and CI.
+CI and the check-architecture command.
 
-This file imports nothing from the plugin, because the init skill
-copies it into the project for the --all run.
+This file imports nothing from the plugin, so the init skill can
+copy it into a project for CI.
 """
+
+from __future__ import annotations
 
 import ast
 import json

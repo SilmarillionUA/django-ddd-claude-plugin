@@ -13,7 +13,6 @@ Create a new app with the name the user gives under the apps root named in the p
 {apps_root}/{app_name}/
 ├── __init__.py
 ├── CLAUDE.md
-├── conftest.py
 ├── domain/
 │   ├── __init__.py
 │   ├── models.py
@@ -94,15 +93,15 @@ for command_name in MANAGEMENT_COMMANDS:
 
 ## Settings
 
-The apps root must be on `sys.path`, so the app imports as `{app_name}`, not `apps.{app_name}`. Find the base settings module, the Celery module and the root URLconf in the project `CLAUDE.md`.
+The apps root must be on `sys.path`, so the app imports as `{app_name}`, not `apps.{app_name}`. Find the base settings module and the root URLconf in the project `CLAUDE.md`.
 
 1. Add `"{app_name}"` to `LOCAL_APPS` in the base settings module.
 2. Add `"{app_name}": "{app_name}.infrastructure.migrations"` to `MIGRATION_MODULES`.
 3. Add the path of `{app_name}/infrastructure/templates` to `TEMPLATES[0]["DIRS"]`, built the way the other entries are.
-4. Add `"{app_name}.infrastructure"` to `autodiscover_tasks` in the project's Celery module if the app has tasks.
+4. Register `{app_name}.infrastructure.tasks` with the project's task runner, if it has one and the app has tasks.
 5. Include `{app_name}.infrastructure.urls` in the root URLconf if the app has views.
 
 ## After creating
 
 - Write the app's `CLAUDE.md` (max 30 lines).
-- Run `make format` and `make test`.
+- Run the project's format and test commands (see `CLAUDE.md`).

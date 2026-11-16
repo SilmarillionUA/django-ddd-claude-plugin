@@ -26,18 +26,13 @@ class CatalogInterface(ABC):
 ## Gateway (`infrastructure/gateways.py`)
 
 ```python
-import structlog
-
-logger = structlog.get_logger(__name__)
-
-
 class CatalogGateway(CatalogInterface):
     def is_lendable(self, *, copy_id: int) -> bool:
         return Copy.repository.is_lendable(copy_id=copy_id)
 ```
 
 - The only module allowed to import another app's models or an outside API client.
-- For an outside API, never call `requests` here. Put the HTTP in a client in `corelib/external/<service>.py` (session, timeout, `Retry` policy, the API's own dataclasses), and pass it to the gateway in `__init__`.
+- For an outside API, never make HTTP calls here. Put the HTTP in a client in `corelib/external/<service>.py` (session, timeout, retry policy, the API's own dataclasses), and pass it to the gateway in `__init__`.
 - Put URLs and timeouts in module constants.
 - Return `None` for a normal "not found". Let real failures raise, so tasks can retry them.
 
@@ -59,4 +54,4 @@ return RefreshBookDetailsUseCase(
 
 ## After creating
 
-- `make format`
+- Run the project's format command (see `CLAUDE.md`).
