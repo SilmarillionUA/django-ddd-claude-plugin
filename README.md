@@ -170,7 +170,7 @@ Only import direction is enforced by a script: `domain/` and `application/` may 
 - `apps_root`: the directory whose children are your apps, relative to the project root. It must be on `sys.path`, so apps import as `lending`, not `apps.lending`.
 - `format_commands`: commands to run on an edited file, by file suffix. `{file}` stands for the file. Leave it empty for no formatting.
 
-To run the layer check in CI, copy `hooks/ddd_layer_guard.py` into your repository and run it from the project root with `--all`.
+To run the layer check in CI, copy `hooks/ddd_layer_guard.py` into your repository and run it from the project root with `--all`. It reads the apps root from `.claude/django-ddd.json`, so commit that file too.
 
 ## Requirements
 

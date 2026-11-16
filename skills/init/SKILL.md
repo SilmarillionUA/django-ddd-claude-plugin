@@ -67,7 +67,7 @@ Run the check from the project root and report what it finds:
 
 `python3 "${CLAUDE_PLUGIN_ROOT}/hooks/ddd_layer_guard.py" --all`
 
-Ask whether the user wants it in CI. If yes, copy `${CLAUDE_PLUGIN_ROOT}/hooks/ddd_layer_guard.py` unchanged to a path they pick, and show the command to run it. Do not edit their CI config.
+Ask whether the user wants it in CI. If yes, copy `${CLAUDE_PLUGIN_ROOT}/hooks/ddd_layer_guard.py` unchanged to a path they pick, and show the command to run it. The script reads the apps root from `.claude/django-ddd.json`, so that file must be committed. Do not edit their CI config.
 
 ## 6. Existing apps
 

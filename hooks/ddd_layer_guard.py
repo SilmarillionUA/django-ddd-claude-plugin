@@ -14,6 +14,8 @@ which then fixes the import. The hook does nothing in a project without
 .claude/django-ddd.json. With --all it checks every file, for
 CI and the check-architecture command.
 
+The apps root comes from the config file. There is no default path.
+
 This file imports nothing from the plugin, so the init skill can
 copy it into a project for CI.
 """
@@ -29,8 +31,11 @@ from pathlib import Path
 PROJECT_DIR_VARIABLE = "CLAUDE_PROJECT_DIR"
 CONFIG_PATH = Path(".claude") / "django-ddd.json"
 APPS_ROOT_KEY = "apps_root"
-DEFAULT_APPS_ROOT = "src/apps"
 CHECK_ALL_FLAG = "--all"
+MISSING_APPS_ROOT_MESSAGE = (
+    f'No apps root set. Add "{APPS_ROOT_KEY}" to {CONFIG_PATH}, '
+    f"as a path relative to the project root."
+)
 
 DOMAIN = "domain"
 APPLICATION = "application"
@@ -182,7 +187,13 @@ def main() -> int:
     if config is None and not check_everything:
         return 0
 
-    apps_root = root / (config or {}).get(APPS_ROOT_KEY, DEFAULT_APPS_ROOT)
+    # No path is guessed. A wrong guess would check nothing and pass.
+    configured_apps_root = (config or {}).get(APPS_ROOT_KEY)
+    if not configured_apps_root:
+        print(MISSING_APPS_ROOT_MESSAGE, file=sys.stderr)
+        return FAILURE_EXIT_CODE
+
+    apps_root = root / configured_apps_root
     if check_everything:
         return check_all(apps_root=apps_root, root=root)
 
