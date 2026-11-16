@@ -8,7 +8,7 @@ The full rules and their reasons are in the `django-ddd:architecture` skill. Loa
 - `domain/` holds models, repository managers, value objects, pure services, errors, interfaces and business constants.
 - `application/use_cases/` holds one use case class per action, with one public `execute()` and keyword-only arguments.
 - `infrastructure/` holds views, API views, serializers, forms, admin, tasks, commands, templates, gateways and the DI container.
-- Queries are built on the QuerySet or repository manager in `domain/managers.py`. Never inline a filter in a use case, view, task or command.
+- Queries are built on the QuerySet or repository manager in `domain/managers.py`. Never inline a filter in a use case, view, task or command. Bulk writes and conditional updates go on the repository too.
 - The current date or time comes into a use case as an argument (`today=`), never read inside.
 - A refusal is a domain error with a stable `code`. The database enforces each invariant too, and the `IntegrityError` becomes the domain error in a narrow try block.
 - Views, tasks and commands get use cases from the container in `infrastructure/di.py` and never build gateways themselves.

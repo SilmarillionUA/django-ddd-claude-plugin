@@ -18,24 +18,43 @@ Create a model with the name the user gives.
 - A docstring that says what one row means and any rule about its lifetime (closed, withdrawn, never deleted).
 - Lengths and limits come from `domain/settings.py`.
 
-## Manager (`domain/managers.py`)
+## Repository (`domain/managers.py`)
+
+The repository is a Django manager. There is no separate repository class or folder.
 
 ```python
-class {Model}QuerySet(models.QuerySet):
+if TYPE_CHECKING:
+    from {app}.domain.models import {Model}
+
+
+class {Model}QuerySet(models.QuerySet["{Model}"]):
     def still_open(self) -> "{Model}QuerySet":
         return self.filter(...)
 
 
-class {Model}Repository(models.Manager):
+class {Model}Repository(models.Manager["{Model}"]):
     def get_queryset(self) -> {Model}QuerySet:
         return {Model}QuerySet(self.model, using=self._db)
 
     def open_count_for_member(self, *, member_id: int) -> int:
         return self.get_queryset().still_open().filter(member_id=member_id).count()
+
+    def close_if_open(self, *, loan_id: int, returned_on: date) -> bool:
+        closed_rows = (
+            self.get_queryset()
+            .still_open()
+            .filter(id=loan_id)
+            .update(returned_on=returned_on)
+        )
+
+        return bool(closed_rows)
 ```
 
+- Type both classes with the model name as a string. The model import stays under `TYPE_CHECKING`, because `models.py` imports this file.
 - Chainable filters on the QuerySet, named in domain words.
 - Business questions on the Repository, keyword-only, returning a bool, a count, one object or `None`, or `.values()` rows with plain keys.
+- Writes that touch many rows or depend on a condition go on the Repository too: a bulk upsert, a conditional UPDATE, a delete of rows no longer present. Name them for what they do (`bulk_upsert`, `close_if_open`, `prune_missing`) and return what the use case needs to know, such as the number of rows changed. Dates and times come in as arguments.
+- Creating or saving one object stays in the use case.
 - A condition that several queries share is a `Q` builder written once. A `prefix` lets another model's query reuse it through a relation:
 
   ```python
@@ -47,7 +66,19 @@ class {Model}Repository(models.Manager):
   ```
 
   Used as `self.filter(CopyRepository.lendable_condition())` and as `Count("copies", filter=CopyRepository.lendable_condition(prefix="copies__"))`.
-- `TYPE_CHECKING` imports for model types.
+
+### When the file grows
+
+When `managers.py` is too long to scan, turn it into a package:
+
+```
+domain/managers/
+├── __init__.py      re-exports every QuerySet and Repository
+├── loan.py
+└── member.py
+```
+
+One module per model. `__init__.py` re-exports each class, so `from {app}.domain.managers import {Model}Repository` keeps working and no caller changes. Do not split by reads and writes.
 
 ## Admin
 

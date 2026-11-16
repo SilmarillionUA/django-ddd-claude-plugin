@@ -63,7 +63,7 @@ An app never imports another app outside its gateways. Queries are built on repo
     ├── CLAUDE.md            what the code cannot tell you
     ├── domain/
     │   ├── models.py        Django models: the entities
-    │   ├── managers.py      QuerySets and repository managers
+    │   ├── managers.py      repositories: QuerySets and <Model>Repository managers
     │   ├── choices.py       TextChoices
     │   ├── exceptions.py    domain errors, each with a stable `code`
     │   ├── interfaces.py    ABCs for other apps and the outside world
@@ -92,6 +92,8 @@ An app never imports another app outside its gateways. Queries are built on repo
 ```
 
 The apps root is whichever directory holds your Django apps. `init` finds it and records it. An app only has the files it needs.
+
+There is no `repositories/` folder. A repository is a Django manager named `<Model>Repository` in `domain/managers.py`, attached to its model as `repository`. Use cases call `Loan.repository.open_count_for_member(member_id=...)`. It holds the reads and the writes that touch many rows or depend on a condition. When the file grows too long to scan, it becomes a `managers/` package with one module per model.
 
 The full rules and the reasons for them are in [skills/architecture/SKILL.md](skills/architecture/SKILL.md).
 

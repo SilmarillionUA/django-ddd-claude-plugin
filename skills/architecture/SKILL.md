@@ -46,7 +46,11 @@ Helpers with no business meaning go in `corelib`, which every layer may import.
 
 **Queries live on the model's QuerySet or repository manager** in `domain/managers.py`. No filter is written inline in a use case, view, task or command. A condition that several queries share is one `Q` builder. This way a rule such as "which copies can be lent" has one definition, and changing it changes every query.
 
-**Each model has two managers:** `objects = models.Manager()` for Django and the admin, and `repository = <Model>Repository()` for business questions.
+**The repository is a Django manager.** There is no `repositories/` folder and no repository interface, because the ORM is the persistence layer. Each model has two managers: `objects = models.Manager()` for Django and the admin, and `repository = <Model>Repository()` for the app's own code. The class is typed with its model, `models.Manager["<Model>"]`, so callers get typed results.
+
+**Repositories own writes too.** A write that touches many rows or depends on a condition is a repository method: a bulk upsert, a conditional UPDATE that claims a row, a delete of rows no longer present. The use case decides that the write happens and the repository knows how. Creating or saving one object in a use case is fine.
+
+**`managers.py` becomes a package when it is too long to scan.** Split it into `domain/managers/` with one module per model, and re-export every class from `__init__.py` so imports from `<app>.domain.managers` keep working. Split by model, not by reads and writes.
 
 **A use case is a class with one public `execute()`** and keyword-only arguments. Dependencies come in through `__init__`, typed as domain interfaces or services. This makes it testable with stub classes and no patching.
 
@@ -84,7 +88,7 @@ The layer guard hook checks import direction and cross-app imports in `domain/` 
 
 ## Review checklist
 
-1. **Layer placement.** ORM filters outside `domain/managers.py`. Business rules in views, serializers, forms, tasks or templates. HTTP, email, task queueing or `timezone.now()` inside `domain/` or `application/`.
+1. **Layer placement.** ORM filters, bulk writes or conditional updates outside `domain/managers.py`. Business rules in views, serializers, forms, tasks or templates. HTTP, email, task queueing or `timezone.now()` inside `domain/` or `application/`.
 2. **Use cases.** One public `execute()`, keyword-only arguments, dependencies through `__init__` typed as interfaces, the date passed in, a model or a frozen dataclass returned.
 3. **Invariants.** Every rule the database can hold is a constraint. Checks that race have a constraint or a conditional UPDATE behind them, and the `IntegrityError` becomes a domain error in a narrow try block.
 4. **Rules written once.** A condition repeated across queries instead of a shared `Q` builder or QuerySet method.
