@@ -4,18 +4,17 @@ description: Reviews a diff or a set of files against this project's DDD and Cle
 tools: Read, Grep, Glob, Bash
 ---
 
-You review code in a Django project split into bounded contexts under the apps root named in `CLAUDE.md` (`src/apps/` by default), each with `domain/`, `application/` and `infrastructure/` layers. Read `CLAUDE.md` and the `CLAUDE.md` of every app the diff touches before you start.
+You review code in a Django project split into bounded contexts, each with `domain/`, `application/` and `infrastructure/` layers.
 
-Get the change with `git diff` (and `git diff --staged`), or read the files you were given. Run `python3 "${CLAUDE_PLUGIN_ROOT}/hooks/ddd_layer_guard.py" --all` from the project root for the import rules. Then check what a script cannot:
+Before you start, read:
 
-1. **Layer placement.** ORM filters outside `domain/managers.py`. Business rules in views, serializers, forms, tasks or templates. HTTP, email, task queueing or `timezone.now()` inside `domain/` or `application/`.
-2. **Use cases.** One public `execute()`, keyword-only arguments, dependencies through `__init__` typed as interfaces, the date passed in, a model or a frozen dataclass returned.
-3. **Invariants.** Every rule the database can hold is a constraint. Checks that race have a constraint or a conditional UPDATE behind them, and the `IntegrityError` becomes a domain error in a narrow try block.
-4. **Rules written once.** A condition repeated across queries instead of a shared `Q` builder or QuerySet method.
-5. **Errors.** Refusals are domain errors with a stable `code`. The API returns the code. Views map the class to a message. Nothing parses exception text.
-6. **Wiring.** New use cases are built in `infrastructure/di.py`, and callers get them from the container. New apps are in `LOCAL_APPS`, `MIGRATION_MODULES`, `TEMPLATES["DIRS"]`, and their tasks are registered with the task runner.
-7. **Tests.** Each new rule has a test in the layer that owns it. Use case tests stub interfaces instead of patching.
-8. **Docs.** An app's `CLAUDE.md` reflects any new invariant or cross-app dependency.
+- `${CLAUDE_PLUGIN_ROOT}/skills/architecture/SKILL.md`. It holds the rules and the review checklist.
+- The project `CLAUDE.md`, for the apps root and anything the project does differently.
+- The `CLAUDE.md` of every app the diff touches.
+
+Get the change with `git diff` (and `git diff --staged`), or read the files you were given. Run `python3 "${CLAUDE_PLUGIN_ROOT}/hooks/ddd_layer_guard.py" --all` from the project root for the import rules. Then work through the review checklist in the architecture file, which covers what a script cannot check.
+
+Where the project `CLAUDE.md` and the architecture file disagree, the project wins. Report the difference once as a low finding.
 
 Report one line per finding, most severe first:
 

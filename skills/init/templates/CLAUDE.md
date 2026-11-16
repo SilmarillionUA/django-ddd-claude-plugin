@@ -1,32 +1,24 @@
 ## Project Structure
 
+The full rules and their reasons are in the `django-ddd:architecture` skill. Load it before deciding where new code belongs. The short version:
+
 - Apps live in `{apps_root}/`. Each app is one bounded context with three layers: `domain/`, `application/`, `infrastructure/`.
 - Imports point inward only: infrastructure imports application and domain, application imports domain, domain imports neither.
-- A domain or application module never imports another app. Cross-app needs go through an ABC in `domain/interfaces.py` and a gateway in `infrastructure/gateways.py`. A foreign key by string name (`"other_app.Model"`) is fine.
-- Models, managers, interfaces, choices, exceptions, value objects and business constants live in `domain/`.
-- ORM query building belongs on the model's QuerySet or repository manager in `domain/managers.py`. Never inline a filter in a use case, view, task or command. Compose the existing helpers instead of repeating a condition.
-- Each model has `objects = models.Manager()` and `repository = <Model>Repository()`.
-- A rule that several queries need is written once, as a `Q` builder on the repository.
-- Use cases live in `application/use_cases/`, one action per file. Use cases and domain services are classes with one public `execute()` and small private helpers.
-- Use cases take keyword-only arguments. Dependencies come in through `__init__`. The current date or time comes in as an argument (`today=`), never read inside.
-- Use cases return a model or a frozen dataclass read model. Anything that depends on today is computed there, not in templates or serializers.
-- Domain errors subclass the app's base error and carry a stable `code`. The API returns the code; web views map the class to a translated message.
-- Checks run before writes, and the database enforces the invariant too (unique index, check constraint, conditional UPDATE). Turn the resulting `IntegrityError` into the domain error, in a narrow try block.
-- Domain services in `domain/services/` are pure: no ORM, no clock. Configuration is a frozen dataclass.
-- Business numbers live in `domain/settings.py` with a comment on why.
-- Views, admin, forms, serializers, API views, tasks, commands, templates, gateways and the DI container live in `infrastructure/`.
-- Each app has a DI container in `infrastructure/di.py` (`<App>Container`) with `@staticmethod` factories. Views, tasks and commands get use cases from it and never build gateways themselves.
+- A domain or application module never imports another app. Cross-app needs go through an ABC in `domain/interfaces.py` and a gateway in `infrastructure/gateways.py`.
+- `domain/` holds models, repository managers, value objects, pure services, errors, interfaces and business constants.
+- `application/use_cases/` holds one use case class per action, with one public `execute()` and keyword-only arguments.
+- `infrastructure/` holds views, API views, serializers, forms, admin, tasks, commands, templates, gateways and the DI container.
+- Queries are built on the QuerySet or repository manager in `domain/managers.py`. Never inline a filter in a use case, view, task or command.
+- The current date or time comes into a use case as an argument (`today=`), never read inside.
+- A refusal is a domain error with a stable `code`. The database enforces each invariant too, and the `IntegrityError` becomes the domain error in a narrow try block.
+- Views, tasks and commands get use cases from the container in `infrastructure/di.py` and never build gateways themselves.
 - API output goes through DRF `serializers.Serializer` subclasses with `to_representation()`. Request-scoped state arrives via serializer `context`.
 - Shared helpers with no business meaning go in `corelib`.
-- An outside API is split in two. The client in `corelib/external/` owns HTTP (session, timeout, retries) and returns the API's shapes. The gateway in `infrastructure/gateways.py` takes the client in `__init__` and maps those shapes to domain types. Gateways never make HTTP calls themselves.
 
 ## Wiring an app
 
 - `{apps_root}` is on `sys.path`, so apps import as `<app>`, not `apps.<app>`.
-- `<app>/__init__.py` aliases `sys.modules["<app>.apps"]` to `infrastructure/apps.py`.
-- The AppConfig overrides `import_models()` to load `domain/models.py` and set `models_module`, and imports `infrastructure.admin` in `ready()`.
-- Add the app to `LOCAL_APPS`, `MIGRATION_MODULES` and `TEMPLATES["DIRS"]` in `{base_settings_path}`.
-- Management commands are registered by name in `ready()`.
+- A new app is added to `LOCAL_APPS`, `MIGRATION_MODULES` and `TEMPLATES["DIRS"]` in `{base_settings_path}`. The `django-ddd:new-app` skill has the rest.
 
 ## Commands
 

@@ -7,6 +7,8 @@ description: Build a feature end to end across the domain, application and infra
 
 Work inside out. Each step leaves the code runnable, and the tests for a layer are written with that layer.
 
+The rules behind each step are in the `django-ddd:architecture` skill. Load it when a placement question comes up that this file does not answer.
+
 ## 1. Find the bounded context
 
 Read the app's `CLAUDE.md`. If the feature belongs to no existing app, stop and use the `django-ddd:new-app` skill. If it needs data another app owns, plan an interface for it now (step 4). Never import the other app's models outside a gateway.
@@ -23,8 +25,6 @@ Read the app's `CLAUDE.md`. If the feature belongs to no existing app, stop and 
 ## 3. Application
 
 - One use case per action: `django-ddd:new-usecase` skill.
-- The date comes in as `today=`. Dependencies come in through `__init__`.
-- Return a model or a frozen read-model dataclass. Work out everything that depends on today there.
 - Tests: `application/tests/`, with stub subclasses of each interface.
 
 ## 4. Gateways
